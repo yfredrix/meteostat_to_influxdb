@@ -14,16 +14,16 @@ influx = InfluxClient(
     os.getenv("INFLUXDBBUCKET"),
 )
 
-weather = weatherAPI.get_weather(os.getenv("LOCATION"))
+weather = weatherAPI.get_weather(location)
 
 if "request" in weather:
     logging.error("Request failed")
 
 
 data_to_write = {
-    "measurements": "weather",
+    "measurement": "weather",
     "tags": {"location": location},
-    "fields": weather["liveweer"],
+    "fields": weather["liveweer"][0],
     "time": datetime.now(),
 }
-influx.write(data_to_write)
+influx.write(influx.convert_to_point(data_to_write))
